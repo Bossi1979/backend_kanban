@@ -52,7 +52,9 @@ def login_successful(user, token):
     """
     return {
             'username': user.username,
+            'firstname': user.first_name,
+            'lastname': user.last_name,
             'email': user.email,
             'token': token.key,
-            'error': 'none'
+            'error': 'none',
         }
