@@ -56,5 +56,6 @@ def login_successful(user, token):
             'lastname': user.last_name,
             'email': user.email,
             'token': token.key,
+            'id': user.id,
             'error': 'none',
         }
