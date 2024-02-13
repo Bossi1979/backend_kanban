@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
+from .utils import *
 
 # Create your views here.
 
@@ -25,6 +26,12 @@ class RegisterView(APIView):
                 user = User.objects.create(username=username, first_name=firstname, last_name=lastname, email=email)
                 user.set_password(password)
                 user.save()
+                print(user.pk)
+                create_Contact(user.pk)
                 return Response({'error': 'none'})
         else:
             return Response({'error': 'Passwords do not match'})
+        
+    
+
+
