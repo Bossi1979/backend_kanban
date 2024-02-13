@@ -2,6 +2,12 @@ from django.shortcuts import render
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from django.contrib.auth import logout
+from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+
 # from rest_framework.views import APIView
 # from django.contrib.auth.models import User
 from .utils import *
@@ -39,4 +45,13 @@ class LoginView(ObtainAuthToken):
         except:
             return Response(login_failed())
         
-        
+class LogoutView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self, request, format=None):
+        token = request.auth.pk
+        token_entry = Token.objects.filter(key=token).first()
+        logout(request)
+        if token_entry:
+            token_entry.delete()
+        return Response({"message": "logout successfully"})
