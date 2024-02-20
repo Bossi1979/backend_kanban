@@ -16,7 +16,7 @@ class ContactsView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, format=None):
-        contacts = ContactsItem.objects.all()
+        contacts = ContactsItem.objects.all().order_by('lastname')
         all_contacts = ContactsSerializer(contacts, many=True)
         return Response(all_contacts.data)
 
