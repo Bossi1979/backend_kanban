@@ -13,4 +13,4 @@ class UserSerializer(serializers.ModelSerializer):
 class ContactsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactsItem
-        fields = 'id_user', 'username', 'email', 'firstname', 'lastname', 'name_abbreviation', 'background_color', 'checked'
+        fields = 'id_user', 'username', 'email', 'firstname', 'lastname', 'name_abbreviation', 'background_color', 'checked', 'phone', 'has_account' 

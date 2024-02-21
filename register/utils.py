@@ -63,7 +63,8 @@ def create_Contact(ident):
                 name_abbreviation = user.first_name[0] + user.last_name[0],
                 background_color = create_background_color(user.first_name[0], user.last_name[0] ),
                 checked = False,
-            
+                phone = '',
+                has_account = True,
             )
             
             print("User found:", user)

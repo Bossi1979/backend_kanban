@@ -16,14 +16,16 @@ class AddTaskItem(models.Model):
   
 
 class ContactsItem(models.Model):
-  id_user = models.IntegerField()
+  id_user = models.IntegerField(default = 0)
   username = models.CharField(max_length=50)
   email = models.CharField(max_length=100)
   firstname = models.CharField(max_length=50)
   lastname = models.CharField(max_length=50)
   name_abbreviation = models.CharField(max_length=2)
+  phone = models.CharField(default = '', max_length=30, blank=True)
   background_color = models.CharField(max_length=7)
-  checked = models.BooleanField('', default=False)
+  checked = models.BooleanField(default=False)
+  has_account = models.BooleanField(default=False)
   
   
 
