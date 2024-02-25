@@ -12,21 +12,14 @@ from .utils import *
 class RegisterView(APIView):
     
     def post(self, request, *args, **kwargs):
-        firstname = request.data.get('firstname')
-        lastname = request.data.get('lastname')
-        email = request.data.get('email')
-        password = request.data.get('password')
-        c_password = request.data.get('cPassword')
-        username = request.data.get('username')
-        if password == c_password:
+        user_dic = create_user_dic(request)
+        if request.data.get('password') == request.data.get('cPassword'):
             if User.objects.filter(email=request.POST.get('email')).exists():
-                print('User already registered')
                 return Response({'error': 'Email already registered'})
             else:
-                user = User.objects.create(username=username, first_name=firstname, last_name=lastname, email=email)
-                user.set_password(password)
+                user = User.objects.create(**user_dic)
+                user.set_password(user_dic["password"])
                 user.save()
-                print(user.pk)
                 create_Contact(user.pk)
                 return Response({'error': 'none'})
         else:

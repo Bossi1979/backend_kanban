@@ -33,6 +33,7 @@ urlpatterns = [
     path('login/', LoginView.as_view()),
     path('register/', RegisterView.as_view()),
     path('contacts/', ContactsView.as_view()),
+    path('contacts/<int:contact_id>/', ContactsView.as_view()),
     path('add_task/', AddTaskView.as_view()),
     path('logout/', LogoutView.as_view()),
     path('add_contact/', AddContactView.as_view()),
