@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 # from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .serializer import ContactsSerializer
+from .serializer import AddTaskSerializer, ContactsSerializer
 from rest_framework.response import Response
 from .models import AddTaskItem, ContactsItem
 from .utils import create_task_dic, create_contact_dic
@@ -15,9 +15,27 @@ class ContactsView(APIView):
     A view for handling contacts data retrieval.
     Requires token authentication.
     """
-
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    
+    
+    def post(self, request, format=None):
+        """
+        Handles POST requests to add a new contact.
+
+        Args:
+            request (HttpRequest): The request object containing contact data.
+            format (str, optional): The requested format. Defaults to None.
+
+        Returns:
+            Response: A response containing data of all contacts.
+        """
+        contact_dic = create_contact_dic(request.data)
+        ContactsItem.objects.create(**contact_dic)
+        contacts = ContactsItem.objects.all().order_by("lastname")
+        all_contacts = ContactsSerializer(contacts, many=True)
+        return Response(all_contacts.data)
+
 
     def get(self, request, format=None):
         """
@@ -34,6 +52,7 @@ class ContactsView(APIView):
         all_contacts = ContactsSerializer(contacts, many=True)
         return Response(all_contacts.data)
 
+
     def delete(self, request, contact_id):
         contact_obj = ContactsItem.objects.get(id=contact_id)
         if contact_obj.has_account == False:
@@ -41,6 +60,7 @@ class ContactsView(APIView):
             return Response({"error": "none"})
         else:
             return Response({"message": "failed"})
+
 
     def patch(self, request, format=None):
         """
@@ -111,30 +131,25 @@ class AddTaskView(APIView):
         task_dic = create_task_dic(request.data)
         newTask = AddTaskItem.objects.create(**task_dic)
         return Response(task_dic)
+    
+    def get(self, request, format=None):
+        tasks = AddTaskItem.objects.all()
+        all_tasks = AddTaskSerializer(tasks, many=True)
+        return Response(all_tasks.data)
+    
+    def patch(self, request, format=None):
+        task_id = request.data["id"]
+        task = get_object_or_404(AddTaskItem, id=task_id)
+        task_dic = create_task_dic(request.data)
+        for key, value in task_dic.items():
+            setattr(task, key, value)
+        task.save()
+        return Response({'message': 'task updated successfully'})
+    
+    def delete(self, request, task_id):
+        task_obj = get_object_or_404(AddTaskItem, id=task_id)
+        task_obj.delete()
+        return Response({"message": "Task deleted successfully"})
+        
+        
 
-
-class AddContactView(APIView):
-    """
-    A view for adding a new contact.
-    Requires token authentication.
-    """
-
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, format=None):
-        """
-        Handles POST requests to add a new contact.
-
-        Args:
-            request (HttpRequest): The request object containing contact data.
-            format (str, optional): The requested format. Defaults to None.
-
-        Returns:
-            Response: A response containing data of all contacts.
-        """
-        contact_dic = create_contact_dic(request.data)
-        ContactsItem.objects.create(**contact_dic)
-        contacts = ContactsItem.objects.all().order_by("lastname")
-        all_contacts = ContactsSerializer(contacts, many=True)
-        return Response(all_contacts.data)
