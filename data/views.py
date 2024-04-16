@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
+from django.db.models import Q
 
 # from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
@@ -7,8 +8,10 @@ from rest_framework.permissions import IsAuthenticated
 from .serializer import AddTaskSerializer, ContactsSerializer
 from rest_framework.response import Response
 from .models import AddTaskItem, ContactsItem
-from .utils import create_task_dic, create_contact_dic
+from .utils import create_task_dic, create_contact_dic, filter_assigned_to_logged_user
 
+
+foundTasks = []
 
 class ContactsView(APIView):
     """
@@ -133,8 +136,12 @@ class AddTaskView(APIView):
         return Response(task_dic)
     
     def get(self, request, format=None):
-        tasks = AddTaskItem.objects.all()
-        all_tasks = AddTaskSerializer(tasks, many=True)
+        user_id = request.user.id
+        all_tasks = AddTaskSerializer(filter_assigned_to_logged_user(user_id), many=True)
+        
+        # tasks = AddTaskItem.objects.all()
+        # all_tasks = AddTaskSerializer(tasks, many=True)
+        
         return Response(all_tasks.data)
     
     def patch(self, request, format=None):

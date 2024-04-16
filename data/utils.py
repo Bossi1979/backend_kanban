@@ -1,5 +1,5 @@
 from register.utils import create_background_color
-
+from .models import AddTaskItem
 
 def create_task_dic(request_data):
         task_dic = {
@@ -27,4 +27,13 @@ def create_contact_dic(request_data):
         "has_account": request_data["hasAccount"],
     }
     return contact_dic
-    
+
+
+def filter_assigned_to_logged_user(user_id):
+    found_tasks = []
+    allTasks = AddTaskItem.objects.all()
+    for task in allTasks:
+        assigned_to = task.assigned_to
+        if not assigned_to or any(assignment['id_user'] == user_id for assignment in assigned_to):
+            found_tasks.append(task)
+    return found_tasks
