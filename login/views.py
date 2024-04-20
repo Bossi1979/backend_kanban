@@ -21,8 +21,7 @@ class LoginView(ObtainAuthToken):
         post(self, request, *args, **kwargs): Handles POST requests for user login.
 
     """
-    
-    
+
     def post(self, request, *args, **kwargs):
         """
         Handle POST requests for user login.
@@ -33,18 +32,20 @@ class LoginView(ObtainAuthToken):
         Returns:
             Response: A Django Rest Framework response containing login success or failure information.
 
-        """    
+        """
         try:
-            request.data['username'] = get_username_by_email(request)
-            serializer = self.serializer_class(data=request.data, context={'request': request})
+            request.data["username"] = get_username_by_email(request)
+            serializer = self.serializer_class(
+                data=request.data, context={"request": request}
+            )
             serializer.is_valid(raise_exception=True)
-            user = serializer.validated_data['user']
+            user = serializer.validated_data["user"]
             token, create = Token.objects.get_or_create(user=user)
             return Response(login_successful(user, token))
         except:
             return Response(login_failed())
 
-        
+
 class LogoutView(APIView):
     """
     A view for handling user logout.
@@ -52,19 +53,19 @@ class LogoutView(APIView):
     """
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    """
-    Handles GET requests for user logout.
 
-    Args:
-        request (HttpRequest): The request object.
-        format (str, optional): The requested format. Defaults to None.
 
-    Returns:
-        Response: A response indicating the success of the logout operation.
-    """
-    
-    
     def get(self, request, format=None):
+        """
+        Handles GET requests for user logout.
+
+        Args:
+            request (HttpRequest): The request object.
+            format (str, optional): The requested format. Defaults to None.
+
+        Returns:
+            Response: A response indicating the success of the logout operation.
+        """
         token = request.auth.pk
         token_entry = Token.objects.filter(key=token).first()
         logout(request)
